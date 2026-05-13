@@ -67,53 +67,46 @@
   </div>
 
   <main class="main-content">
-    <div id="overviewTab">
-      <div class="admin-header">
-        <h1>Welcome, Tayyab Uddin</h1>
-        <p id="currentDate"></p>
-      </div>
-
-      <div class="stat-grid">
-        <div class="stat-card">
-          <h3>Total Visitors</h3>
-          <div class="value">1,284</div>
+    <div id="dashboardTabs">
+      <!-- Overview Tab -->
+      <div id="overviewTab" class="tab-content">
+        <div class="admin-header">
+          <h1>Welcome, Tayyab Uddin</h1>
+          <p id="currentDate"></p>
         </div>
-        <div class="stat-card">
-          <h3>New Inquiries</h3>
-          <div class="value">12</div>
+        <div class="stat-grid">
+          <div class="stat-card"><h3>Total Visitors</h3><div class="value" id="statVisitors">0</div></div>
+          <div class="stat-card"><h3>New Inquiries</h3><div class="value" id="statInquiries">0</div></div>
+          <div class="stat-card"><h3>Products Listed</h3><div class="value" id="statProducts">0</div></div>
         </div>
-        <div class="stat-card">
-          <h3>Hangu Reach</h3>
-          <div class="value">84%</div>
+        <div class="admin-card">
+          <h2>Recent Activity</h2>
+          <div id="recentActivity">Loading activity...</div>
         </div>
       </div>
 
-      <div class="admin-card">
-        <h2>Recent Customer Inquiries</h2>
-        <table class="inquiry-table">
-          <thead>
-            <tr>
-              <th>Customer Name</th>
-              <th>Interest</th>
-              <th>Date</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Ali Khan</td>
-              <td>Men's Unstitched</td>
-              <td>14 May, 2026</td>
-              <td><span class="status-badge status-new">New</span></td>
-            </tr>
-            <tr>
-              <td>Zoya Ahmed</td>
-              <td>Designer Lawn</td>
-              <td>13 May, 2026</td>
-              <td><span class="status-badge status-new">New</span></td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- Inquiries Tab -->
+      <div id="inquiriesTab" class="tab-content" style="display:none;">
+        <div class="admin-header"><h1>Customer Inquiries</h1></div>
+        <div class="admin-card">
+          <table class="inquiry-table">
+            <thead>
+              <tr><th>Name</th><th>Interest</th><th>Date</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody id="inquiryList"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Products Tab -->
+      <div id="productsTab" class="tab-content" style="display:none;">
+        <div class="admin-header">
+          <h1>Manage Products</h1>
+          <button class="btn btn-gold" onclick="openAddProduct()">+ Add New Product</button>
+        </div>
+        <div class="admin-card">
+          <div id="productList" class="stat-grid"></div>
+        </div>
       </div>
     </div>
 
@@ -148,28 +141,59 @@
 
     if(localStorage.getItem('admin_auth') === 'true') {
       document.getElementById('loginOverlay').style.display = 'none';
-      loadInquiries();
+      initializeDashboard();
     }
 
-    function loadInquiries() {
-      const tableBody = document.querySelector('.inquiry-table tbody');
-      db.collection('inquiries').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
-        tableBody.innerHTML = '';
-        document.getElementById('newCount').innerText = snapshot.size;
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          const date = data.timestamp ? data.timestamp.toDate().toLocaleDateString() : 'Pending...';
-          const row = `
-            <tr>
-              <td>${data.name}</td>
-              <td>${data.interest}</td>
-              <td>${date}</td>
-              <td><span class="status-badge status-new">${data.status}</span></td>
-            </tr>
-          `;
-          tableBody.innerHTML += row;
+    function initializeDashboard() {
+      // Inquiries Listener
+      db.collection('inquiries').orderBy('timestamp', 'desc').onSnapshot(snap => {
+        document.getElementById('statInquiries').innerText = snap.size;
+        document.getElementById('newCount').innerText = snap.size;
+        const list = document.getElementById('inquiryList');
+        list.innerHTML = '';
+        snap.forEach(doc => {
+          const d = doc.data();
+          list.innerHTML += `<tr>
+            <td>${d.name}</td>
+            <td>${d.interest}</td>
+            <td>${d.timestamp?.toDate().toLocaleDateString() || '...'}</td>
+            <td><span class="status-badge status-new">${d.status}</span></td>
+            <td><button onclick="deleteDoc('inquiries','${doc.id}')" style="color:red;border:none;background:none;cursor:pointer;"><i class="fas fa-trash"></i></button></td>
+          </tr>`;
         });
       });
+
+      // Products Listener
+      db.collection('products').onSnapshot(snap => {
+        document.getElementById('statProducts').innerText = snap.size;
+        const pList = document.getElementById('productList');
+        pList.innerHTML = '';
+        snap.forEach(doc => {
+          const p = doc.data();
+          pList.innerHTML += `<div class="stat-card">
+            <h3>${p.category}</h3>
+            <div class="value" style="font-size:1.2rem;">${p.name}</div>
+            <button onclick="deleteDoc('products','${doc.id}')" class="btn btn-outline" style="margin-top:10px;padding:5px 10px;">Delete</button>
+          </div>`;
+        });
+      });
+    }
+
+    function deleteDoc(col, id) {
+      if(confirm('Are you sure?')) db.collection(col).doc(id).delete();
+    }
+
+    function showTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+      document.querySelectorAll('.sidebar-menu li').forEach(l => l.classList.remove('active'));
+      document.getElementById(tabName + 'Tab').style.display = 'block';
+      event.currentTarget.classList.add('active');
+    }
+
+    function openAddProduct() {
+      const name = prompt("Product Name?");
+      const cat = prompt("Category (Men/Women/Perfume)?");
+      if(name && cat) db.collection('products').add({ name, category: cat, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
     }
 
     function logout() {
