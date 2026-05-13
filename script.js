@@ -97,4 +97,28 @@ document.addEventListener('DOMContentLoaded', () => {
       item.classList.toggle('active');
     });
   });
+
+  // Reviews Slider Logic
+  const slider = document.getElementById('reviewsSlider');
+  const dots = document.querySelectorAll('.slider-dots .dot');
+  let currentSlide = 0;
+
+  if (slider && dots.length > 0) {
+    function goToSlide(index) {
+      slider.style.transform = `translateX(-${index * 100}%)`;
+      dots.forEach(dot => dot.classList.remove('active'));
+      dots[index].classList.add('active');
+      currentSlide = index;
+    }
+
+    dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => goToSlide(index));
+    });
+
+    // Auto-play
+    setInterval(() => {
+      currentSlide = (currentSlide + 1) % dots.length;
+      goToSlide(currentSlide);
+    }, 5000);
+  }
 });

@@ -542,22 +542,56 @@ img {
   color: var(--primary);
 }
 
-/* TESTIMONIALS */
+/* REVIEWS CAROUSEL */
+.reviews-container {
+  position: relative;
+  overflow: hidden;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.reviews-slider {
+  display: flex;
+  transition: transform 0.5s ease;
+}
+
+.review-slide {
+  min-width: 100%;
+  padding: 0 15px;
+}
+
+.slider-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.slider-dots .dot {
+  width: 10px;
+  height: 10px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.slider-dots .dot.active {
+  background: var(--accent);
+  width: 30px;
+  border-radius: 10px;
+}
+
 .testimonials-section {
   background: var(--primary);
   color: var(--secondary);
 }
 
-.testimonials-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
-}
-
 .testi-card {
-  padding: 40px;
+  padding: 50px;
   background: rgba(255,255,255,0.05);
-  border-left: 3px solid var(--accent);
+  border-left: 4px solid var(--accent);
+  text-align: center;
 }
 
 .testi-stars {
