@@ -98,14 +98,23 @@
         </div>
       </div>
 
-      <!-- Products Tab -->
-      <div id="productsTab" class="tab-content" style="display:none;">
-        <div class="admin-header">
-          <h1>Manage Products</h1>
-          <button class="btn btn-gold" onclick="openAddProduct()">+ Add New Product</button>
-        </div>
         <div class="admin-card">
           <div id="productList" class="stat-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message View Modal -->
+    <div id="msgModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:2000; align-items:center; justify-content:center; padding: 20px;">
+      <div class="admin-card" style="width:100%; max-width:500px; position:relative;">
+        <button onclick="closeModal()" style="position:absolute; top:15px; right:15px; border:none; background:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+        <h2 id="modalName" style="margin-bottom:10px;">Customer Name</h2>
+        <p id="modalPhone" style="color:var(--accent); font-weight:600; margin-bottom:20px;">0333-0000000</p>
+        <hr style="margin-bottom:20px; border:0; border-top:1px solid #eee;" />
+        <p id="modalInterest" style="font-size:0.8rem; text-transform:uppercase; color:#666; margin-bottom:5px;">Subject</p>
+        <div id="modalMsg" style="background:#f9f9f9; padding:20px; border-radius:5px; font-style:italic;">Message goes here...</div>
+        <div style="margin-top:30px; display:flex; gap:10px;">
+          <a id="modalWa" href="#" target="_blank" class="btn btn-gold" style="flex:1; text-align:center;"><i class="fab fa-whatsapp"></i> Reply on WA</a>
         </div>
       </div>
     </div>
@@ -153,13 +162,16 @@
         list.innerHTML = '';
         snap.forEach(doc => {
           const d = doc.data();
-          list.innerHTML += `<tr>
-            <td>${d.name}</td>
-            <td>${d.interest}</td>
-            <td>${d.timestamp?.toDate().toLocaleDateString() || '...'}</td>
-            <td><span class="status-badge status-new">${d.status}</span></td>
-            <td><button onclick="deleteDoc('inquiries','${doc.id}')" style="color:red;border:none;background:none;cursor:pointer;"><i class="fas fa-trash"></i></button></td>
-          </tr>`;
+            <tr>
+              <td>${d.name}</td>
+              <td>${d.interest}</td>
+              <td>${d.timestamp?.toDate().toLocaleDateString() || '...'}</td>
+              <td><span class="status-badge status-new">${d.status}</span></td>
+              <td>
+                <button onclick="viewMsg('${d.name}','${d.phone}','${d.interest}','${d.message.replace(/'/g, "\\'")}')" style="color:var(--primary);margin-right:15px;border:none;background:none;cursor:pointer;"><i class="fas fa-eye"></i></button>
+                <button onclick="deleteDoc('inquiries','${doc.id}')" style="color:red;border:none;background:none;cursor:pointer;"><i class="fas fa-trash"></i></button>
+              </td>
+            </tr>`;
         });
       });
 
@@ -194,6 +206,19 @@
       const name = prompt("Product Name?");
       const cat = prompt("Category (Men/Women/Perfume)?");
       if(name && cat) db.collection('products').add({ name, category: cat, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+    }
+
+    function viewMsg(name, phone, interest, msg) {
+      document.getElementById('modalName').innerText = name;
+      document.getElementById('modalPhone').innerText = phone;
+      document.getElementById('modalInterest').innerText = interest;
+      document.getElementById('modalMsg').innerText = '"' + msg + '"';
+      document.getElementById('modalWa').href = `https://wa.me/${phone.replace(/[^0-9]/g, '')}`;
+      document.getElementById('msgModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('msgModal').style.display = 'none';
     }
 
     function logout() {
