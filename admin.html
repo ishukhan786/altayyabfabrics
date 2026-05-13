@@ -55,6 +55,7 @@
       <li class="active" onclick="showTab('overview', this)"><i class="fas fa-home"></i> Overview</li>
       <li onclick="showTab('inquiries', this)"><i class="fas fa-envelope"></i> Inquiries <span id="newCount" style="background: red; color: #fff; padding: 2px 6px; border-radius: 10px; font-size: 0.6rem; margin-left: auto;">0</span></li>
       <li onclick="showTab('products', this)"><i class="fas fa-box"></i> Products</li>
+      <li onclick="showTab('settings', this)"><i class="fas fa-cog"></i> Settings</li>
       <li onclick="logout()" style="margin-top: 50px;"><i class="fas fa-sign-out-alt"></i> Logout</li>
     </ul>
   </div>
@@ -84,6 +85,19 @@
       <div id="productList" class="stat-grid"></div>
     </div>
 
+    <div id="settingsTab" class="tab-content" style="display:none;">
+      <div class="admin-header"><h1>Admin Settings</h1></div>
+      <div class="admin-card" style="max-width: 500px;">
+        <h3>Change Access Password</h3>
+        <p style="font-size: 0.8rem; color: #666; margin-bottom: 20px;">This password is required for CEO login.</p>
+        <div class="form-group">
+          <label>New Password</label>
+          <input type="text" id="newPass" placeholder="Enter new password" style="width: 100%; padding: 12px; margin-top: 10px; border: 1px solid #ddd; border-radius: 4px;" />
+        </div>
+        <button class="btn btn-gold" style="margin-top: 20px; width: 100%;" onclick="updatePassword()">Save New Password</button>
+      </div>
+    </div>
+
     <div id="msgModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:2000; align-items:center; justify-content:center; padding: 20px;">
       <div class="admin-card" style="width:100%; max-width:500px; position:relative;">
         <button onclick="closeModal()" style="position:absolute; top:15px; right:15px; border:none; background:none; font-size:1.5rem; cursor:pointer;">&times;</button>
@@ -101,9 +115,15 @@
     const firebaseConfig = { apiKey: "AIzaSyBRUmI8wSpGTBwGuwEliPbpC0-ycCnW1Lc", authDomain: "altayyabfabrics.firebaseapp.com", projectId: "altayyabfabrics", storageBucket: "altayyabfabrics.firebasestorage.app", messagingSenderId: "1052030617938", appId: "1:1052030617938:web:9179892cd34bd8b50a928b" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    let currentAdminPass = '7860'; // Default fallback
+
+    // Fetch password from DB immediately
+    db.collection('settings').doc('admin').onSnapshot(doc => {
+      if(doc.exists) currentAdminPass = doc.data().password;
+    });
 
     function checkAuth() {
-      if (document.getElementById('adminPass').value === '7860') {
+      if (document.getElementById('adminPass').value === currentAdminPass) {
         document.getElementById('loginOverlay').style.display = 'none';
         localStorage.setItem('admin_auth', 'true');
         initializeDashboard();
@@ -163,6 +183,15 @@
       const name = prompt("Name?");
       const cat = prompt("Category?");
       if(name && cat) db.collection('products').add({ name, category: cat, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+    }
+
+    function updatePassword() {
+      const newP = document.getElementById('newPass').value;
+      if(newP && confirm('Change password to: ' + newP + '?')) {
+        db.collection('settings').doc('admin').set({ password: newP })
+          .then(() => alert('Password updated successfully!'))
+          .catch(e => alert('Error: Use Firestore to create "settings/admin" document first.'));
+      }
     }
   </script>
 </body>
