@@ -107,14 +107,36 @@
         <a id="modalWa" href="#" target="_blank" class="btn btn-gold" style="display:block; text-align:center;">Reply on WhatsApp</a>
       </div>
     </div>
+
+    <!-- Add Product Modal -->
+    <div id="productModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:2000; align-items:center; justify-content:center; padding: 20px;">
+      <div class="admin-card" style="width:100%; max-width:500px; position:relative;">
+        <button onclick="closeProductModal()" style="position:absolute; top:15px; right:15px; border:none; background:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+        <h2 style="margin-bottom:20px;">Add New Product</h2>
+        <div class="form-group"><label>Product Name</label><input type="text" id="pName" style="width:100%; padding:10px; margin:5px 0 15px; border:1px solid #ddd;"></div>
+        <div class="form-group"><label>Category</label><select id="pCat" style="width:100%; padding:10px; margin:5px 0 15px; border:1px solid #ddd;"><option>Men</option><option>Women</option><option>Kids</option><option>Perfume</option><option>Watches</option></select></div>
+        <div class="form-group"><label>Product Photo/Video</label><input type="file" id="pFile" accept="image/*,video/*" style="width:100%; padding:10px; margin:5px 0 15px;"></div>
+        <button id="uploadBtn" class="btn btn-gold" style="width:100%;" onclick="saveProduct()">Upload & Save Product</button>
+        <div id="uploadProgress" style="margin-top:10px; font-size:0.8rem; color:var(--accent); display:none;">Uploading... 0%</div>
+      </div>
+    </div>
   </main>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
   <script>
-    const firebaseConfig = { apiKey: "AIzaSyBRUmI8wSpGTBwGuwEliPbpC0-ycCnW1Lc", authDomain: "altayyabfabrics.firebaseapp.com", projectId: "altayyabfabrics", storageBucket: "altayyabfabrics.firebasestorage.app", messagingSenderId: "1052030617938", appId: "1:1052030617938:web:9179892cd34bd8b50a928b" };
+    const firebaseConfig = { 
+      apiKey: "AIzaSyBRUmI8wSpGTBwGuwEliPbpC0-ycCnW1Lc", 
+      authDomain: "altayyabfabrics.firebaseapp.com", 
+      projectId: "altayyabfabrics", 
+      storageBucket: "altayyabfabrics.firebasestorage.app", 
+      messagingSenderId: "1052030617938", 
+      appId: "1:1052030617938:web:9179892cd34bd8b50a928b" 
+    };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const storage = firebase.storage();
     let currentAdminPass = '7860'; // Default fallback
 
     // Fetch password from DB immediately
@@ -148,15 +170,28 @@
           list.innerHTML += `<tr><td>${d.name}</td><td>${d.interest}</td><td>${d.timestamp?.toDate().toLocaleDateString() || '...'}</td><td><span class="status-badge">${d.status}</span></td><td><button onclick="viewMsg('${d.name}','${d.phone}','${d.interest}','${d.message.replace(/'/g, "\\'")}')" style="color:blue;border:none;background:none;cursor:pointer;margin-right:10px;"><i class="fas fa-eye"></i></button><button onclick="deleteDoc('inquiries','${doc.id}')" style="color:red;border:none;background:none;cursor:pointer;"><i class="fas fa-trash"></i></button></td></tr>`;
         });
       });
-      db.collection('products').onSnapshot(snap => {
+      db.collection('products').orderBy('timestamp', 'desc').onSnapshot(snap => {
         document.getElementById('statProducts').innerText = snap.size;
         const pList = document.getElementById('productList');
         pList.innerHTML = '';
         snap.forEach(doc => {
           const p = doc.data();
-          pList.innerHTML += `<div class="stat-card"><h3>${p.category}</h3><div class="value" style="font-size:1.2rem;">${p.name}</div><button onclick="deleteDoc('products','${doc.id}')" class="btn btn-outline" style="margin-top:10px;padding:5px 10px;">Delete</button></div>`;
+          const media = p.url ? (p.type === 'video' ? `<video src="${p.url}" style="width:100%;height:100px;object-fit:cover;"></video>` : `<img src="${p.url}" style="width:100%;height:100px;object-fit:cover;border-radius:5px;">`) : '';
+          pList.innerHTML += `<div class="stat-card" style="padding:15px;">
+            ${media}
+            <h3 style="margin-top:10px;">${p.category}</h3>
+            <div class="value" style="font-size:1rem;">${p.name}</div>
+            <button onclick="deleteProduct('${doc.id}','${p.url}')" class="btn btn-outline" style="margin-top:10px;padding:5px 10px;width:100%;">Delete</button>
+          </div>`;
         });
       });
+    }
+
+    function deleteProduct(id, url) {
+      if(confirm('Delete?')) {
+        db.collection('products').doc(id).delete();
+        if(url) storage.refFromURL(url).delete().catch(e => console.log(e));
+      }
     }
 
     function showTab(name, el) {
@@ -179,10 +214,39 @@
     function logout() { localStorage.removeItem('admin_auth'); location.reload(); }
     document.getElementById('currentDate').innerText = new Date().toDateString();
 
-    function openAddProduct() {
-      const name = prompt("Name?");
-      const cat = prompt("Category?");
-      if(name && cat) db.collection('products').add({ name, category: cat, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+    function openAddProduct() { document.getElementById('productModal').style.display = 'flex'; }
+    function closeProductModal() { document.getElementById('productModal').style.display = 'none'; }
+
+    async function saveProduct() {
+      const name = document.getElementById('pName').value;
+      const cat = document.getElementById('pCat').value;
+      const file = document.getElementById('pFile').files[0];
+      const btn = document.getElementById('uploadBtn');
+      const progress = document.getElementById('uploadProgress');
+
+      if(!name || !file) return alert('Name and File are required!');
+      
+      btn.disabled = true;
+      progress.style.display = 'block';
+
+      const type = file.type.includes('video') ? 'video' : 'image';
+      const ref = storage.ref(`products/${Date.now()}_${file.name}`);
+      const uploadTask = ref.put(file);
+
+      uploadTask.on('state_changed', 
+        (s) => progress.innerText = `Uploading... ${Math.round((s.bytesTransferred / s.totalBytes) * 100)}%`,
+        (e) => { alert(e.message); btn.disabled = false; },
+        async () => {
+          const url = await uploadTask.snapshot.ref.getDownloadURL();
+          await db.collection('products').add({ name, category: cat, url, type, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+          alert('Product Saved!');
+          closeProductModal();
+          btn.disabled = false;
+          progress.style.display = 'none';
+          document.getElementById('pName').value = '';
+          document.getElementById('pFile').value = '';
+        }
+      );
     }
 
     function updatePassword() {
