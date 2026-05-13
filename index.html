@@ -267,36 +267,16 @@
       
       <div class="reviews-container reveal">
         <div class="reviews-slider" id="reviewsSlider">
-          <!-- Slide 1 -->
+          <!-- Dynamic Reviews will be injected here -->
           <div class="review-slide active">
             <div class="testi-card">
-              <div class="testi-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-              <p>"Al-Tayyab Fabrics has the best collection in Hangu. I always find something special for Eid here. The quality is unmatched!"</p>
-              <div class="testi-author"><span class="testi-name">Muhammad Farhan</span><span class="testi-loc">Verified Customer</span></div>
-            </div>
-          </div>
-          <!-- Slide 2 -->
-          <div class="review-slide">
-            <div class="testi-card">
-              <div class="testi-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-              <p>"Bought a perfume set and a watch as a wedding gift. The presentation was beautiful and my family loved it. Highly recommended!"</p>
-              <div class="testi-author"><span class="testi-name">Sana Bibi</span><span class="testi-loc">Verified Customer</span></div>
-            </div>
-          </div>
-          <!-- Slide 3 -->
-          <div class="review-slide">
-            <div class="testi-card">
-              <div class="testi-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-              <p>"My go-to shop for kids clothing. The fabric is soft and the designs are so beautiful. My children love wearing them!"</p>
-              <div class="testi-author"><span class="testi-name">Nazia Gul</span><span class="testi-loc">Verified Customer</span></div>
+              <p>Loading the latest reviews...</p>
             </div>
           </div>
         </div>
         
         <div class="slider-dots" id="sliderDots">
-          <span class="dot active" data-index="0"></span>
-          <span class="dot" data-index="1"></span>
-          <span class="dot" data-index="2"></span>
+          <!-- Dots will be injected here -->
         </div>
       </div>
 
@@ -401,6 +381,81 @@
     <span class="wa-tooltip">Chat with us!</span>
   </a>
 
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = { 
+      apiKey: "AIzaSyBRUmI8wSpGTBwGuwEliPbpC0-ycCnW1Lc", 
+      authDomain: "altayyabfabrics.firebaseapp.com", 
+      projectId: "altayyabfabrics", 
+      storageBucket: "altayyabfabrics.firebasestorage.app", 
+      messagingSenderId: "1052030617938", 
+      appId: "1:1052030617938:web:9179892cd34bd8b50a928b",
+      measurementId: "G-J6JY0QZ4TN"
+    };
+    
+    try {
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+      
+      db.collection('reviews').orderBy('timestamp', 'desc').limit(10).onSnapshot(snap => {
+        const slider = document.getElementById('reviewsSlider');
+        const dotsContainer = document.getElementById('sliderDots');
+        
+        if (snap.empty) {
+           // Default if no reviews in DB
+           slider.innerHTML = '<div class="review-slide active"><div class="testi-card"><p>No reviews yet. Be the first to review us on Google!</p></div></div>';
+           return;
+        }
+
+        slider.innerHTML = '';
+        dotsContainer.innerHTML = '';
+        
+        snap.docs.forEach((doc, index) => {
+          const r = doc.data();
+          const stars = '<i class="fas fa-star"></i>'.repeat(r.stars);
+          
+          slider.innerHTML += `
+            <div class="review-slide ${index === 0 ? 'active' : ''}">
+              <div class="testi-card">
+                <div class="testi-stars">${stars}</div>
+                <p>"${r.text}"</p>
+                <div class="testi-author">
+                  <span class="testi-name">${r.name}</span>
+                  <span class="testi-loc"><i class="fab fa-google"></i> Verified Review</span>
+                </div>
+              </div>
+            </div>`;
+            
+          dotsContainer.innerHTML += `<span class="dot ${index === 0 ? 'active' : ''}" data-index="${index}"></span>`;
+        });
+        
+        // Re-initialize slider logic from script.js after dynamic load
+        setTimeout(() => {
+          const dots = document.querySelectorAll('#sliderDots .dot');
+          let currentSlide = 0;
+          
+          function goToSlide(idx) {
+            slider.style.transform = `translateX(-${idx * 100}%)`;
+            dots.forEach(d => d.classList.remove('active'));
+            dots[idx].classList.add('active');
+            currentSlide = idx;
+          }
+
+          dots.forEach((dot, idx) => {
+            dot.addEventListener('click', () => goToSlide(idx));
+          });
+          
+          // Restart autoplay
+          if(window.reviewInterval) clearInterval(window.reviewInterval);
+          window.reviewInterval = setInterval(() => {
+            currentSlide = (currentSlide + 1) % snap.size;
+            goToSlide(currentSlide);
+          }, 5000);
+        }, 500);
+      });
+    } catch(e) { console.log("Reviews offline"); }
+  </script>
   <script src="script.js"></script>
 </body>
 </html>

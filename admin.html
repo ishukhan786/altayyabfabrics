@@ -55,6 +55,7 @@
       <li class="active" onclick="showTab('overview', this)"><i class="fas fa-home"></i> Overview</li>
       <li onclick="showTab('inquiries', this)"><i class="fas fa-envelope"></i> Inquiries <span id="newCount" style="background: red; color: #fff; padding: 2px 6px; border-radius: 10px; font-size: 0.6rem; margin-left: auto;">0</span></li>
       <li onclick="showTab('products', this)"><i class="fas fa-box"></i> Products</li>
+      <li onclick="showTab('reviews', this)"><i class="fas fa-star"></i> Reviews</li>
       <li onclick="showTab('settings', this)"><i class="fas fa-cog"></i> Settings</li>
       <li onclick="logout()" style="margin-top: 50px;"><i class="fas fa-sign-out-alt"></i> Logout</li>
     </ul>
@@ -83,6 +84,16 @@
     <div id="productsTab" class="tab-content" style="display:none;">
       <div class="admin-header"><h1>Manage Products</h1><button class="btn btn-gold" onclick="openAddProduct()">+ Add Product</button></div>
       <div id="productList" class="stat-grid"></div>
+    </div>
+
+    <div id="reviewsTab" class="tab-content" style="display:none;">
+      <div class="admin-header"><h1>Customer Reviews</h1><button class="btn btn-gold" onclick="openAddReview()">+ Add Google Review</button></div>
+      <div class="admin-card">
+        <table class="inquiry-table">
+          <thead><tr><th>Customer</th><th>Rating</th><th>Review Snippet</th><th>Action</th></tr></thead>
+          <tbody id="reviewList"></tbody>
+        </table>
+      </div>
     </div>
 
     <div id="settingsTab" class="tab-content" style="display:none;">
@@ -118,6 +129,18 @@
         <div class="form-group"><label>Product Photo/Video</label><input type="file" id="pFile" accept="image/*,video/*" style="width:100%; padding:10px; margin:5px 0 15px;"></div>
         <button id="uploadBtn" class="btn btn-gold" style="width:100%;" onclick="saveProduct()">Upload & Save Product</button>
         <div id="uploadProgress" style="margin-top:10px; font-size:0.8rem; color:var(--accent); display:none;">Uploading... 0%</div>
+      </div>
+    </div>
+
+    <!-- Add Review Modal -->
+    <div id="reviewModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:2000; align-items:center; justify-content:center; padding: 20px;">
+      <div class="admin-card" style="width:100%; max-width:500px; position:relative;">
+        <button onclick="closeReviewModal()" style="position:absolute; top:15px; right:15px; border:none; background:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+        <h2 style="margin-bottom:20px;">Add Google Review</h2>
+        <div class="form-group"><label>Customer Name</label><input type="text" id="rName" placeholder="e.g. Muhammad Farhan" style="width:100%; padding:10px; margin:5px 0 15px; border:1px solid #ddd;"></div>
+        <div class="form-group"><label>Rating (1-5)</label><input type="number" id="rStars" min="1" max="5" value="5" style="width:100%; padding:10px; margin:5px 0 15px; border:1px solid #ddd;"></div>
+        <div class="form-group"><label>Review Text</label><textarea id="rText" rows="4" placeholder="Paste the Google review here..." style="width:100%; padding:10px; margin:5px 0 15px; border:1px solid #ddd;"></textarea></div>
+        <button class="btn btn-gold" style="width:100%;" onclick="saveReview()">Save Review</button>
       </div>
     </div>
   </main>
@@ -185,6 +208,14 @@
           </div>`;
         });
       });
+      db.collection('reviews').orderBy('timestamp', 'desc').onSnapshot(snap => {
+        const rList = document.getElementById('reviewList');
+        rList.innerHTML = '';
+        snap.forEach(doc => {
+          const r = doc.data();
+          rList.innerHTML += `<tr><td>${r.name}</td><td>${r.stars} ⭐</td><td>${r.text.substring(0, 50)}...</td><td><button onclick="deleteDoc('reviews','${doc.id}')" style="color:red;border:none;background:none;cursor:pointer;"><i class="fas fa-trash"></i></button></td></tr>`;
+        });
+      });
     }
 
     function deleteProduct(id, url) {
@@ -216,6 +247,25 @@
 
     function openAddProduct() { document.getElementById('productModal').style.display = 'flex'; }
     function closeProductModal() { document.getElementById('productModal').style.display = 'none'; }
+
+    function openAddReview() { document.getElementById('reviewModal').style.display = 'flex'; }
+    function closeReviewModal() { document.getElementById('reviewModal').style.display = 'none'; }
+
+    async function saveReview() {
+      const name = document.getElementById('rName').value;
+      const stars = document.getElementById('rStars').value;
+      const text = document.getElementById('rText').value;
+
+      if(!name || !text) return alert('Name and Review Text are required!');
+      
+      try {
+        await db.collection('reviews').add({ name, stars: parseInt(stars), text, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        alert('Review Saved!');
+        closeReviewModal();
+        document.getElementById('rName').value = '';
+        document.getElementById('rText').value = '';
+      } catch(e) { alert(e.message); }
+    }
 
     async function saveProduct() {
       const name = document.getElementById('pName').value;
