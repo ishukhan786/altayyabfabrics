@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Store Gallery | Al-Tayyab Fabrics Hangu - Our Shop Photos</title>
+  <meta name="description" content="View the interior and exterior of Al-Tayyab Fabrics in Hangu. See our wide range of clothing, watches, and perfumes displayed in our luxury store near Shahi Masjid." />
+  <link rel="canonical" href="https://altayyabfabrics.com/gallery.html" />
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 60px 0; }
+    .gallery-item { position: relative; overflow: hidden; height: 350px; cursor: pointer; border-radius: 5px; }
+    .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease; }
+    .gallery-item:hover img { transform: scale(1.1); }
+    .gallery-item:nth-child(2) { grid-column: span 2; }
+    .gallery-item:nth-child(5) { grid-column: span 2; }
+    @media (max-width: 768px) {
+      .gallery-grid { grid-template-columns: 1fr; }
+      .gallery-item { grid-column: span 1 !important; height: 300px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar scrolled" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-ar">الطیب</span>
+        <div class="logo-text">
+          <span class="logo-main">AL-TAYYAB</span>
+          <span class="logo-sub">FABRICS</span>
+        </div>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="about.html" class="nav-link">About</a></li>
+        <li><a href="products.html" class="nav-link">Products</a></li>
+        <li><a href="collection.html" class="nav-link">Collection</a></li>
+        <li><a href="gallery.html" class="nav-link active">Gallery</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+      <a href="https://wa.me/923332828716" target="_blank" class="btn-whatsapp nav-wa">
+        <i class="fab fa-whatsapp"></i> WhatsApp
+      </a>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== HEADER ===== -->
+  <header class="section" style="background: var(--primary); padding: 150px 0 60px; text-align: center; color: #fff;">
+    <div class="container">
+      <p class="section-eyebrow">Experience the Vibe</p>
+      <h1 class="section-title light animate-fade-up">Store Gallery</h1>
+      <div class="gold-divider"></div>
+    </div>
+  </header>
+
+  <!-- ===== GALLERY ===== -->
+  <section class="section">
+    <div class="container">
+      <div class="gallery-grid">
+        <div class="gallery-item reveal"><img src="images/al-tayyab-fabrics-store-hangu.png" alt="Luxury Interior of Al-Tayyab Fabrics Hangu" loading="lazy" /></div>
+        <div class="gallery-item reveal"><img src="images/hangu-clothing-store-banner.png" alt="Premium Clothing Display Hangu" loading="lazy" /></div>
+        <div class="gallery-item reveal"><img src="images/mens-clothing-hangu.png" alt="Men's Unstitched Fabric Section Hangu" loading="lazy" /></div>
+        <div class="gallery-item reveal"><img src="images/womens-fashion-hangu.png" alt="Women's Fashion Corner Hangu" loading="lazy" /></div>
+        <div class="gallery-item reveal"><img src="images/latest-fashion-collection-hangu.png" alt="New Arrivals Section Hangu" loading="lazy" /></div>
+        <div class="gallery-item reveal"><img src="images/kids-clothing-hangu.png" alt="Kids Clothing Display Hangu" loading="lazy" /></div>
+        <div class="gallery-item reveal"><img src="images/perfume-shop-hangu.png" alt="Perfume and Fragrance Gallery Hangu" loading="lazy" /></div>
+        <div class="gallery-item reveal"><img src="images/watches-hangu.png" alt="Luxury Watch Display Hangu" loading="lazy" /></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="footer-top">
+      <div class="container footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <span class="logo-ar">الطیب</span>
+            <div class="logo-text"><span class="logo-main">AL-TAYYAB</span><span class="logo-sub">FABRICS</span></div>
+          </div>
+          <p>Your premium destination for fashion, fragrances and timepieces in Hangu, Pakistan.</p>
+          <div class="footer-socials">
+            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://wa.me/923332828716" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="products.html">Products</a></li>
+            <li><a href="collection.html">Latest Collection</a></li>
+            <li><a href="gallery.html">Store Gallery</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Categories</h4>
+          <ul>
+            <li><a href="products.html#men">Men's Clothing</a></li>
+            <li><a href="products.html#women">Women's Clothing</a></li>
+            <li><a href="products.html#kids">Kids Clothing</a></li>
+            <li><a href="products.html#perfumes">Perfumes</a></li>
+            <li><a href="products.html#watches">Watches</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact Us</h4>
+          <ul class="footer-contact">
+            <li><i class="fas fa-map-marker-alt"></i> Shop No 45-46, Khan Sahib Orakzai Plaza, Sangirh Road, Near Shahi Masjid, Hangu, Pakistan</li>
+            <li><i class="fas fa-phone"></i> <a href="tel:+923332828716">0333-2828716</a></li>
+            <li><i class="fab fa-whatsapp"></i> <a href="https://wa.me/923332828716">WhatsApp Us</a></li>
+            <li><i class="fas fa-clock"></i> Daily: 9:00 AM – 10:00 PM</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <p>&copy; 2025 Al-Tayyab Fabrics. All rights reserved. | Hangu, Pakistan</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
