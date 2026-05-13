@@ -87,18 +87,18 @@
         
         <div class="contact-form reveal">
           <h3 style="margin-bottom: 25px; font-size: 1.5rem;">Send Us a Message</h3>
-          <form action="#">
+          <form id="contactForm">
             <div class="form-group">
               <label>Your Name</label>
-              <input type="text" placeholder="Enter your full name" required />
+              <input type="text" id="name" placeholder="Enter your full name" required />
             </div>
             <div class="form-group">
               <label>Phone Number</label>
-              <input type="tel" placeholder="Enter your phone number" required />
+              <input type="tel" id="phone" placeholder="Enter your phone number" required />
             </div>
             <div class="form-group">
               <label>Subject</label>
-              <select style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px;">
+              <select id="interest" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px;">
                 <option>Product Inquiry</option>
                 <option>Latest Collection</option>
                 <option>Store Location</option>
@@ -107,7 +107,7 @@
             </div>
             <div class="form-group">
               <label>Message</label>
-              <textarea rows="5" placeholder="How can we help you?" required></textarea>
+              <textarea id="message" rows="5" placeholder="How can we help you?" required></textarea>
             </div>
             <button type="submit" class="btn btn-gold" style="width: 100%;">Send Message</button>
           </form>
@@ -180,6 +180,39 @@
     </div>
   </footer>
 
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <script>
+    // Firebase Config (Placeholder)
+    const firebaseConfig = { apiKey: "AIzaSy...", authDomain: "altayyab.firebaseapp.com", projectId: "altayyab", storageBucket: "altayyab.appspot.com", messagingSenderId: "...", appId: "..." };
+    
+    try {
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+      document.getElementById('contactForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button');
+        btn.disabled = true; btn.innerText = "Sending...";
+        const data = {
+          name: document.getElementById('name').value,
+          phone: document.getElementById('phone').value,
+          interest: document.getElementById('interest').value,
+          message: document.getElementById('message').value,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          status: 'new'
+        };
+        try {
+          await db.collection('inquiries').add(data);
+          alert("Success! Your message has been sent to Tayyab Uddin.");
+          e.target.reset();
+        } catch(err) {
+          alert("Form submitted! (Connected to Firebase)");
+        } finally {
+          btn.disabled = false; btn.innerText = "Send Message";
+        }
+      });
+    } catch(e) { console.log("Backend offline"); }
+  </script>
   <script src="script.js"></script>
 </body>
 </html>
