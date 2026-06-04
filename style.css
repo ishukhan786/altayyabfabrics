@@ -4,17 +4,19 @@
 */
 
 :root {
-  --primary: #000000;
+  --primary: #0a0a0a;
   --secondary: #ffffff;
-  --accent: #d4af37; /* Gold */
+  --accent: #d4af37;
+  --accent-gradient: linear-gradient(135deg, #f4e4bc 0%, #d4af37 50%, #aa8623 100%);
   --accent-light: #f4e4bc;
-  --gray-light: #f5f5f5;
+  --gray-light: #f9f9f9;
   --gray-mid: #999999;
   --text: #333333;
   --font-main: 'Montserrat', sans-serif;
   --font-display: 'Cormorant Garamond', serif;
   --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-  --shadow: 0 10px 30px rgba(0,0,0,0.1);
+  --shadow: 0 15px 35px rgba(0,0,0,0.15);
+  --shadow-gold: 0 10px 25px rgba(212, 175, 55, 0.3);
 }
 
 * {
@@ -116,14 +118,18 @@ img {
 }
 
 .btn-gold {
-  background-color: var(--accent);
+  background: var(--accent-gradient);
   color: var(--primary);
+  border: 1px solid transparent;
+  box-shadow: var(--shadow-gold);
 }
 
 .btn-gold:hover {
-  background-color: var(--primary);
+  background: transparent;
+  border-color: var(--accent);
   color: var(--accent);
   transform: translateY(-5px);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
 }
 
 .btn-outline {
@@ -151,10 +157,12 @@ img {
 }
 
 .navbar.scrolled {
-  background: rgba(0, 0, 0, 0.9);
+  background: rgba(10, 10, 10, 0.75);
   padding: 15px 0;
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+  box-shadow: var(--shadow);
 }
 
 .nav-container {
@@ -388,6 +396,14 @@ img {
   position: relative;
   overflow: hidden;
   background: var(--primary);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  transition: all 0.5s ease;
+}
+
+.cat-card:hover {
+  box-shadow: var(--shadow-gold);
+  z-index: 1;
 }
 
 .cat-tall {
@@ -519,15 +535,16 @@ img {
   text-align: center;
   padding: 40px;
   background: var(--gray-light);
-  border: 1px solid transparent;
+  border: 1px solid rgba(0,0,0,0.05);
+  border-radius: 16px;
   transition: var(--transition);
 }
 
 .why-card:hover {
   background: var(--secondary);
   border-color: var(--accent);
-  box-shadow: var(--shadow);
-  transform: translateY(-10px);
+  box-shadow: var(--shadow-gold);
+  transform: translateY(-10px) scale(1.02);
 }
 
 .why-icon {
@@ -592,6 +609,10 @@ img {
   background: rgba(255,255,255,0.05);
   border-left: 4px solid var(--accent);
   text-align: center;
+  border-radius: 0 16px 16px 0;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: var(--shadow);
 }
 
 .testi-stars {

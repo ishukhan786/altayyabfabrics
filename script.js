@@ -3,12 +3,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const hamburger = document.getElementById('hamburger');
   const navLinks = document.getElementById('navLinks');
   
-  // Navbar Scroll Effect
+  // Navbar Scroll Effect and Parallax
+  const heroBg = document.querySelector('.hero-bg');
+  
   window.addEventListener('scroll', () => {
     if (window.scrollY > 50) {
       navbar.classList.add('scrolled');
     } else {
       navbar.classList.remove('scrolled');
+    }
+    
+    // Parallax Effect
+    if (heroBg) {
+      heroBg.style.transform = `translateY(${window.scrollY * 0.4}px)`;
     }
     
     // Reveal Animations on Scroll
@@ -50,17 +57,17 @@ document.addEventListener('DOMContentLoaded', () => {
       
       if (revealTop < windowHeight - revealPoint) {
         el.style.opacity = '1';
-        el.style.transform = 'translateY(0)';
-        el.style.transition = 'all 0.8s ease';
+        el.style.transform = 'translateY(0) scale(1)';
+        el.style.transition = 'all 0.8s cubic-bezier(0.165, 0.84, 0.44, 1)';
       }
     });
   }
 
   // Pre-style reveal elements
-  const reveals = document.querySelectorAll('.reveal, .why-card, .testi-card');
+  const reveals = document.querySelectorAll('.reveal, .cat-card, .why-card, .testi-card');
   reveals.forEach(el => {
     el.style.opacity = '0';
-    el.style.transform = 'translateY(30px)';
+    el.style.transform = 'translateY(40px) scale(0.98)';
   });
 
   // Initial check for visible elements
