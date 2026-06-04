@@ -531,19 +531,49 @@ img {
   gap: 40px;
 }
 
+.why-section {
+  position: relative;
+  background: var(--primary);
+  background-image: url('images/shop.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: var(--secondary);
+}
+
+.why-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(10, 10, 10, 0.85);
+  z-index: 0;
+}
+
+.why-section .container {
+  position: relative;
+  z-index: 1;
+}
+
+.why-section .section-title {
+  color: var(--secondary);
+}
+
 .why-card {
   text-align: center;
   padding: 40px;
-  background: var(--gray-light);
-  border: 1px solid rgba(0,0,0,0.05);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(212, 175, 55, 0.15);
   border-radius: 16px;
   transition: var(--transition);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 .why-card:hover {
-  background: var(--secondary);
-  border-color: var(--accent);
-  box-shadow: var(--shadow-gold);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(212, 175, 55, 0.6);
+  box-shadow: 0 15px 40px rgba(212, 175, 55, 0.25);
   transform: translateY(-10px) scale(1.02);
 }
 
@@ -556,7 +586,11 @@ img {
 .why-card h3 {
   font-size: 1.5rem;
   margin-bottom: 15px;
-  color: var(--primary);
+  color: var(--secondary);
+}
+
+.why-card p {
+  color: rgba(255, 255, 255, 0.75);
 }
 
 /* REVIEWS CAROUSEL */
