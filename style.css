@@ -961,3 +961,154 @@ img {
   padding: 100px 40px;
   z-index: 999;
 }
+
+/* =========================================
+   PAGE SPECIFIC ENHANCEMENTS
+   ========================================= */
+
+/* PRODUCTS PAGE */
+.product-section { 
+  padding: 100px 0; 
+  border-bottom: 1px solid rgba(212, 175, 55, 0.1); 
+}
+.product-section:last-child { border-bottom: none; }
+.product-display { 
+  display: grid; 
+  grid-template-columns: 1fr 1fr; 
+  gap: 80px; 
+  align-items: center; 
+}
+.product-display.reverse { direction: rtl; }
+.product-display.reverse .product-text { direction: ltr; }
+.product-img { position: relative; }
+.product-img img { 
+  width: 100%; 
+  border-radius: 16px; 
+  box-shadow: var(--shadow); 
+  transition: var(--transition); 
+}
+.product-display:hover .product-img img { 
+  transform: scale(1.03); 
+  box-shadow: var(--shadow-gold); 
+}
+.product-text ul {
+  margin: 25px 0;
+  padding-left: 0;
+  list-style: none;
+}
+.product-text li {
+  position: relative;
+  padding-left: 25px;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+.product-text li::before {
+  content: '◆';
+  color: var(--accent);
+  position: absolute;
+  left: 0;
+  font-size: 0.8rem;
+  top: 2px;
+}
+
+@media (max-width: 900px) {
+  .product-display { grid-template-columns: 1fr; gap: 40px; }
+  .product-display.reverse { direction: ltr; }
+}
+
+/* COLLECTION PAGE */
+.collection-grid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+  gap: 40px; 
+  padding: 60px 0; 
+}
+.product-item { 
+  position: relative; 
+  overflow: hidden; 
+  background: var(--gray-light); 
+  box-shadow: var(--shadow); 
+  border-radius: 16px; 
+  transition: var(--transition);
+  border: 1px solid rgba(0,0,0,0.05);
+}
+.product-item:hover { 
+  transform: translateY(-10px); 
+  box-shadow: var(--shadow-gold); 
+  border-color: var(--accent);
+}
+.product-item img { 
+  width: 100%; 
+  height: 350px;
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1); 
+}
+.product-item:hover img { transform: scale(1.1); }
+.new-badge { 
+  position: absolute; 
+  top: 20px; 
+  left: 20px; 
+  background: var(--accent-gradient); 
+  color: var(--primary); 
+  padding: 8px 20px; 
+  font-size: 0.75rem; 
+  font-weight: 700; 
+  text-transform: uppercase; 
+  letter-spacing: 1px;
+  z-index: 2; 
+  border-radius: 30px;
+  box-shadow: var(--shadow-gold);
+}
+.product-item-info { 
+  padding: 30px; 
+  text-align: center; 
+  background: var(--primary);
+  color: var(--secondary);
+}
+.product-item-info h4 { 
+  font-size: 1.4rem; 
+  margin-bottom: 10px; 
+}
+.product-item-info p { 
+  color: var(--accent); 
+  font-weight: 600; 
+  letter-spacing: 1px;
+}
+
+/* SCROLL TO TOP BUTTON */
+.scroll-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  background: var(--accent-gradient);
+  color: var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  box-shadow: var(--shadow-gold);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: var(--transition);
+  z-index: 99;
+}
+.scroll-top.visible {
+  opacity: 1;
+  visibility: visible;
+}
+.scroll-top:hover {
+  transform: translateY(-5px);
+  background: var(--primary);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+@media (max-width: 768px) {
+  .scroll-top {
+    bottom: 90px; /* Above whatsapp float */
+    right: 20px;
+  }
+}

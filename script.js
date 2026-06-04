@@ -128,4 +128,26 @@ document.addEventListener('DOMContentLoaded', () => {
       goToSlide(currentSlide);
     }, 5000);
   }
+
+  // Scroll to Top Button UX Enhancement
+  const scrollTopBtn = document.createElement('div');
+  scrollTopBtn.innerHTML = '<i class="fas fa-arrow-up"></i>';
+  scrollTopBtn.className = 'scroll-top';
+  scrollTopBtn.setAttribute('aria-label', 'Scroll to top');
+  document.body.appendChild(scrollTopBtn);
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 400) {
+      scrollTopBtn.classList.add('visible');
+    } else {
+      scrollTopBtn.classList.remove('visible');
+    }
+  });
+
+  scrollTopBtn.addEventListener('click', () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  });
 });
